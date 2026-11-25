@@ -1,0 +1,1623 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BG Engenharia — Diagnóstico e Reposicionamento de Marca</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap"
+        rel="stylesheet" />
+    <style>
+        :root {
+            /* Base Metro Dark */
+            --metro-bg: #0e0e0e;
+            --metro-surface: #1b1b1b;
+            --metro-surface-2: #242424;
+            --metro-border: #3a3a3a;
+
+            /* Paleta Clássica Windows 8.1 Metro UI (calibrada para alto contraste com #FFFFFF) */
+            --metro-blue: #0063b1;
+            /* Metro Cobalt Blue (6.0:1 com branco) */
+            --metro-purple: #5c2d91;
+            /* Metro Purple (8.8:1 com branco) */
+            --metro-teal: #006d77;
+            /* Metro Teal (5.9:1 com branco) */
+            --metro-green: #006b2b;
+            /* Metro Emerald (6.5:1 com branco) */
+            --metro-crimson: #a20025;
+            /* Metro Crimson (8.1:1 com branco) */
+            --metro-steel: #2b579a;
+            /* Metro Steel Blue (7.3:1 com branco) */
+            --metro-rust: #b83b0b;
+            /* Metro Deep Orange (5.5:1 com branco) */
+
+            /* Cores de destaque para texto/bordas sobre fundo escuro #1b1b1b (alta legibilidade) */
+            --hi-cyan: #38bdf8;
+            /* ~9.2:1 */
+            --hi-green: #4ade80;
+            /* ~10.8:1 */
+            --hi-amber: #fbbf24;
+            /* ~10.9:1 */
+            --hi-coral: #fb7185;
+            /* ~6.9:1 */
+            --hi-violet: #c084fc;
+            /* ~6.6:1 */
+
+            /* Tipografia */
+            --metro-text: #ffffff;
+            --metro-body: #e5e5e5;
+            --metro-muted: #c2c2c2;
+            --gap: 10px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Open Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--metro-bg);
+            color: var(--metro-text);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        code {
+            font-family: 'Consolas', 'Courier New', monospace;
+            background: rgba(255, 255, 255, 0.14);
+            color: #ffffff;
+            padding: 1px 6px;
+            font-size: 0.88em;
+        }
+
+        /* Barra de Progresso Metro */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            width: 0%;
+            background: var(--hi-cyan);
+            z-index: 1002;
+            transition: width 0.08s linear;
+        }
+
+        /* Metro Top App Bar / Pivot Navigation */
+        .metro-bar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: #080808;
+            border-bottom: 2px solid var(--metro-border);
+        }
+
+        .metro-bar-inner {
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 12px 16px 0;
+        }
+
+        .metro-header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .metro-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 0.92rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .metro-brand-square {
+            width: 16px;
+            height: 16px;
+            background: var(--metro-blue);
+            display: inline-block;
+        }
+
+        .metro-status {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            background: var(--metro-blue);
+            color: #ffffff;
+            padding: 4px 10px;
+        }
+
+        .pivot-nav {
+            display: flex;
+            gap: 4px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .pivot-nav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .pivot-link {
+            flex: 0 0 auto;
+            text-decoration: none;
+            color: var(--metro-muted);
+            font-size: 0.84rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 10px 14px;
+            border-bottom: 3px solid transparent;
+            transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+        }
+
+        .pivot-link:hover {
+            color: #ffffff;
+            background: var(--metro-surface);
+        }
+
+        .pivot-link.active {
+            color: #ffffff;
+            background: var(--metro-surface);
+            border-bottom-color: var(--hi-cyan);
+        }
+
+        /* Container & Sections */
+        .container {
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 0 16px;
+        }
+
+        section {
+            padding: 48px 0;
+            scroll-margin-top: 98px;
+            border-bottom: 1px solid var(--metro-border);
+        }
+
+        /* Tipografia Metro */
+        .metro-kicker {
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--hi-cyan);
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        h1.metro-display {
+            font-size: clamp(2rem, 7vw, 3.5rem);
+            font-weight: 300;
+            line-height: 1.12;
+            letter-spacing: -0.02em;
+            color: #ffffff;
+            margin-bottom: 16px;
+        }
+
+        h1.metro-display strong {
+            font-weight: 700;
+            color: var(--hi-cyan);
+        }
+
+        h2.metro-title {
+            font-size: clamp(1.7rem, 5vw, 2.45rem);
+            font-weight: 300;
+            line-height: 1.15;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        .metro-lead {
+            font-size: 1rem;
+            color: var(--metro-body);
+            max-width: 760px;
+            margin-bottom: 24px;
+        }
+
+        /* Hero Start Screen */
+        .hero-start {
+            padding: 44px 0 52px;
+            background: var(--metro-bg);
+        }
+
+        /* Grids */
+        .tile-grid-4 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--gap);
+            margin-bottom: 24px;
+        }
+
+        .tile-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--gap);
+        }
+
+        .tile-grid-3 {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--gap);
+        }
+
+        /* Metro Flat Tiles */
+        .tile {
+            background: var(--metro-surface);
+            border: 2px solid var(--metro-border);
+            padding: 20px;
+            position: relative;
+            transition: border-color 0.12s ease;
+        }
+
+        .tile:hover {
+            border-color: #ffffff;
+        }
+
+        .tile-dark {
+            background: var(--metro-surface);
+            border: 2px solid var(--metro-border);
+            border-left: 5px solid var(--hi-cyan);
+        }
+
+        /* Colored Live Tiles — Texto 100% branco garantido em TODOS os elementos filhos */
+        .tile-colored {
+            border: 2px solid transparent;
+            color: #ffffff;
+        }
+
+        .tile-colored h3,
+        .tile-colored p,
+        .tile-colored li,
+        .tile-colored strong,
+        .tile-colored em,
+        .tile-colored .tile-meta {
+            color: #ffffff !important;
+        }
+
+        .tile-colored .tile-meta {
+            display: inline-block;
+            background: rgba(0, 0, 0, 0.28);
+            padding: 3px 8px;
+            margin-bottom: 10px;
+        }
+
+        .bg-blue {
+            background: var(--metro-blue);
+        }
+
+        .bg-purple {
+            background: var(--metro-purple);
+        }
+
+        .bg-teal {
+            background: var(--metro-teal);
+        }
+
+        .bg-green {
+            background: var(--metro-green);
+        }
+
+        .bg-crimson {
+            background: var(--metro-crimson);
+        }
+
+        .bg-steel {
+            background: var(--metro-steel);
+        }
+
+        .bg-rust {
+            background: var(--metro-rust);
+        }
+
+        .tile-meta {
+            font-size: 0.74rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--hi-cyan);
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .tile h3 {
+            font-size: 1.18rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 8px;
+            line-height: 1.25;
+        }
+
+        .tile p,
+        .tile li {
+            font-size: 0.95rem;
+            color: var(--metro-body);
+        }
+
+        .tile ul {
+            padding-left: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .tile-stat {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1.2;
+            margin-top: 4px;
+        }
+
+        /* Botão Metro */
+        .metro-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--metro-blue);
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.92rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 14px 24px;
+            border: 2px solid var(--metro-blue);
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+
+        .metro-btn:hover {
+            background: #ffffff;
+            color: #0e0e0e;
+            border-color: #ffffff;
+        }
+
+        /* 3 Palavras Live Strip */
+        .words-strip {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--gap);
+            margin-bottom: var(--gap);
+        }
+
+        .word-tile {
+            padding: 16px 10px;
+            font-size: clamp(0.9rem, 3vw, 1.18rem);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            text-align: center;
+            color: #ffffff;
+        }
+
+        /* Seletor de Clientes */
+        .client-selector {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+            margin-bottom: 14px;
+        }
+
+        .client-btn {
+            background: var(--metro-surface);
+            color: var(--metro-body);
+            border: 2px solid var(--metro-border);
+            padding: 12px 10px;
+            text-align: left;
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.12s ease;
+        }
+
+        .client-btn:hover {
+            border-color: #ffffff;
+            color: #ffffff;
+        }
+
+        .client-btn.active {
+            background: var(--metro-purple);
+            border-color: #ffffff;
+            color: #ffffff;
+        }
+
+        .client-panel {
+            display: none;
+            background: var(--metro-surface);
+            border: 2px solid var(--metro-border);
+            padding: 20px;
+        }
+
+        .client-panel.active {
+            display: block;
+            animation: metroIn 0.2s ease-out;
+        }
+
+        @keyframes metroIn {
+            from {
+                opacity: 0;
+                transform: translateX(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .client-top {
+            border-bottom: 2px solid var(--metro-border);
+            padding-bottom: 14px;
+            margin-bottom: 16px;
+        }
+
+        .client-top h3 {
+            font-size: 1.45rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .client-top span {
+            display: block;
+            font-size: 0.84rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--hi-violet);
+            margin-top: 4px;
+        }
+
+        .qa-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .qa-block {
+            background: #121212;
+            padding: 14px 16px;
+            border-left: 4px solid var(--metro-blue);
+        }
+
+        .qa-block.gap-alert {
+            border-left: 4px solid var(--hi-coral);
+            background: #231217;
+        }
+
+        .qa-label {
+            font-size: 0.76rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--hi-cyan);
+            margin-bottom: 6px;
+        }
+
+        .qa-block.gap-alert .qa-label {
+            color: var(--hi-coral);
+        }
+
+        .qa-text {
+            font-size: 0.95rem;
+            color: #ffffff;
+        }
+
+        /* Acordeão Metro (Evidências) */
+        .metro-acc {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .acc-box {
+            background: var(--metro-surface);
+            border: 2px solid var(--metro-border);
+        }
+
+        .acc-btn {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            padding: 16px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            text-align: left;
+            font-family: inherit;
+            font-size: 0.96rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+        }
+
+        .acc-btn:hover {
+            background: var(--metro-surface-2);
+        }
+
+        .acc-plus {
+            width: 28px;
+            height: 28px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--metro-blue);
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 1.15rem;
+            flex-shrink: 0;
+        }
+
+        .acc-body {
+            display: none;
+            padding: 16px 18px;
+            border-top: 1px solid var(--metro-border);
+            background: #141414;
+        }
+
+        .acc-box.open .acc-body {
+            display: block;
+        }
+
+        .acc-box.open .acc-plus {
+            background: #ffffff;
+            color: #0e0e0e;
+        }
+
+        .acc-body p {
+            font-size: 0.95rem;
+            color: var(--metro-body);
+            margin-bottom: 10px;
+        }
+
+        .acc-body p:last-child {
+            margin-bottom: 0;
+        }
+
+        .acc-body strong {
+            color: #ffffff;
+        }
+
+        /* Galeria de Evidências & Lightbox Metro */
+        .evidence-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .evidence-card {
+            background: #0e0e0e;
+            border: 1px solid var(--metro-border);
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            transition: border-color 0.12s ease;
+        }
+
+        .evidence-card:hover {
+            border-color: var(--hi-cyan);
+        }
+
+        .evidence-card.is-wide {
+            grid-column: 1 / -1;
+        }
+
+        .evidence-thumb {
+            width: 100%;
+            height: 185px;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+            background: #080808;
+            border-bottom: 1px solid var(--metro-border);
+        }
+
+        .evidence-card.is-wide .evidence-thumb {
+            height: auto;
+            max-height: 210px;
+            object-fit: contain;
+            padding: 6px;
+        }
+
+        .evidence-caption {
+            padding: 10px 12px;
+            font-size: 0.82rem;
+            color: var(--metro-muted);
+            line-height: 1.4;
+        }
+
+        .evidence-caption strong {
+            color: #ffffff;
+            display: block;
+            margin-bottom: 2px;
+            font-size: 0.84rem;
+        }
+
+        .metro-lightbox {
+            position: fixed;
+            inset: 0;
+            background: rgba(8, 8, 8, 0.94);
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            gap: 14px;
+        }
+
+        .metro-lightbox.open {
+            display: flex;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: var(--metro-crimson);
+            color: #ffffff;
+            border: 2px solid #ffffff;
+            padding: 8px 14px;
+            font-family: inherit;
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            cursor: pointer;
+        }
+
+        .lightbox-close:hover {
+            background: #ffffff;
+            color: #0e0e0e;
+        }
+
+        .lightbox-img {
+            max-width: 94vw;
+            max-height: 76vh;
+            object-fit: contain;
+            border: 2px solid var(--metro-border);
+            background: #080808;
+        }
+
+        .lightbox-caption {
+            max-width: 780px;
+            text-align: center;
+            font-size: 0.92rem;
+            color: var(--metro-body);
+        }
+
+        /* Fluxo do Diagnóstico */
+        .metro-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .flow-tile {
+            background: var(--metro-surface);
+            padding: 18px 20px;
+            border: 1px solid var(--metro-border);
+            border-left: 5px solid var(--hi-cyan);
+        }
+
+        .flow-tile p {
+            color: var(--metro-body);
+            font-size: 0.95rem;
+        }
+
+        .flow-tile strong {
+            color: #ffffff;
+        }
+
+        .flow-tile.is-diagnosis {
+            background: var(--metro-crimson);
+            border: 2px solid #ffffff;
+            color: #ffffff;
+        }
+
+        .flow-tile.is-diagnosis p,
+        .flow-tile.is-diagnosis .tile-meta,
+        .flow-tile.is-diagnosis h3 {
+            color: #ffffff;
+        }
+
+        .flow-tile.is-diagnosis .tile-meta {
+            display: inline-block;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 3px 8px;
+        }
+
+        .flow-chevron {
+            padding-left: 20px;
+            color: var(--hi-cyan);
+            font-weight: 700;
+            font-size: 1.2rem;
+            line-height: 1;
+        }
+
+        /* Footer */
+        footer {
+            background: #080808;
+            padding: 36px 0;
+        }
+
+        .footer-inner {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .footer-quote {
+            font-size: 1.2rem;
+            font-weight: 400;
+            color: #ffffff;
+            border-left: 4px solid var(--hi-cyan);
+            padding-left: 14px;
+        }
+
+        .footer-meta {
+            font-size: 0.84rem;
+            color: var(--metro-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        /* Desktop / Tablet */
+        @media (min-width: 720px) {
+            .tile-grid-4 {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .tile-grid-2 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .tile-grid-3 {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .client-selector {
+                grid-template-columns: repeat(5, 1fr);
+            }
+
+            .qa-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .qa-block.gap-alert {
+                grid-column: span 2;
+            }
+
+            .footer-inner {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }
+        }
+    </style>
+</head>
+
+<body id="topo">
+
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- Metro Top App Bar -->
+    <nav class="metro-bar" aria-label="Navegação principal">
+        <div class="metro-bar-inner">
+            <div class="metro-header-top">
+                <a href="#topo" class="metro-brand">
+                    <span class="metro-brand-square"></span>
+                    BG Engenharia // Branding
+                </a>
+                <span class="metro-status">Guia de Sala</span>
+            </div>
+            <div class="pivot-nav" id="pivotNav">
+                <a href="#visao-interna" class="pivot-link">01 Visão Interna</a>
+                <a href="#escuta" class="pivot-link">02 Clientes</a>
+                <a href="#evidencias" class="pivot-link">03 Evidências</a>
+                <a href="#analise" class="pivot-link">04 Análise</a>
+                <a href="#diagnostico" class="pivot-link">05 Diagnóstico</a>
+                <a href="#proposta" class="pivot-link">06 Proposta</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Start Screen -->
+    <header class="hero-start">
+        <div class="container">
+            <span class="metro-kicker">Trabalho Experimental • Publicidade e Propaganda • PUC Minas</span>
+            <h1 class="metro-display">Diagnóstico e Reposicionamento de Marca: <strong>BG Engenharia</strong></h1>
+            <p class="metro-lead">
+                Painel interativo para acompanhamento da apresentação em sala. Explore em tempo real a visão interna, os
+                relatos de clientes, a auditoria de pontos de contato e a proposta estratégica.
+            </p>
+
+            <div class="tile-grid-4">
+                <div class="tile tile-colored bg-blue">
+                    <span class="tile-meta">Marca</span>
+                    <div class="tile-stat">BG Engenharia</div>
+                </div>
+                <div class="tile tile-colored bg-teal">
+                    <span class="tile-meta">Escopo</span>
+                    <div class="tile-stat">8 Disciplinas</div>
+                </div>
+                <div class="tile tile-colored bg-crimson">
+                    <span class="tile-meta">Diagnóstico</span>
+                    <div class="tile-stat">Paradoxo Técnico</div>
+                </div>
+                <div class="tile tile-colored bg-purple">
+                    <span class="tile-meta">Método</span>
+                    <div class="tile-stat">Evidência → Ação</div>
+                </div>
+            </div>
+
+            <a href="#visao-interna" class="metro-btn">Iniciar Acompanhamento →</a>
+        </div>
+    </header>
+
+    <!-- 01. Visão Interna -->
+    <section id="visao-interna">
+        <div class="container">
+            <span class="metro-kicker">01 • Identidade Pretendida</span>
+            <h2 class="metro-title">Visão Interna da Marca</h2>
+            <p class="metro-lead">
+                Mapeamento realizado em entrevista com o proprietário da BG Engenharia para compreender o posicionamento
+                desejado e os valores inegociáveis da organização.
+            </p>
+
+            <div class="words-strip">
+                <div class="word-tile bg-blue">Inovadora</div>
+                <div class="word-tile bg-teal">Qualidade</div>
+                <div class="word-tile bg-green">Eficiente</div>
+            </div>
+
+            <div class="tile-grid-2">
+                <div class="tile tile-dark">
+                    <span class="tile-meta">Principal Diferencial</span>
+                    <h3>Engenharia Multisserviços Sob Medida</h3>
+                    <p>Projetos estruturais, hidráulicos, elétricos, prevenção contra incêndio (PCI), laudos técnicos,
+                        vistorias com drone, climatização e distribuição de gás — todos executados sob medida,
+                        respeitando o orçamento do cliente, com velocidade e excelência integradas.</p>
+                </div>
+
+                <div class="tile tile-dark">
+                    <span class="tile-meta">Público Mais Importante</span>
+                    <h3>Logística, Entretenimento &amp; Alto Padrão</h3>
+                    <p>Empresas de grande porte e condomínios residenciais de alto padrão. Histórico comprovado em CDs
+                        da <strong>Shopee</strong> (incluindo a reforma da residência da própria dona no Brasil),
+                        <strong>Mercado Livre</strong>, <strong>Shopping Iguatemi (SP)</strong> e centros logísticos da
+                        <strong>Amazon</strong> em Cajamar e Jundiaí.</p>
+                </div>
+
+                <div class="tile tile-dark">
+                    <span class="tile-meta">Experiência &amp; Valor Intocável</span>
+                    <h3>Atendimento Único e Humildade de 2015</h3>
+                    <p>Fazer o cliente se sentir especial e único, garantindo recorrência e rapidez. A marca nunca deve
+                        perder a <strong>humildade de quando começou em 2015</strong> como "afilhada" de um escritório
+                        de engenharia em Santo André (SP).</p>
+                </div>
+
+                <div class="tile tile-dark">
+                    <span class="tile-meta">Desafio Declarado</span>
+                    <h3>Entregar como Gigante, Parecer Genérica</h3>
+                    <p>A empresa executa projetos milionários para players globais, mas seu visual e sua comunicação
+                        ainda parecem os de "mais um escritório genérico". O comercial depende de um PDF e de reuniões
+                        em vídeo para provar sua capacidade.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 02. Escuta Exploratória -->
+    <section id="escuta">
+        <div class="container">
+            <span class="metro-kicker">02 • Escuta Exploratória do Público</span>
+            <h2 class="metro-title">Percepção dos Clientes</h2>
+            <p class="metro-lead">
+                Cinco clientes dos segmentos corporativo, logístico, varejo e residencial de alto padrão responderam às
+                mesmas cinco perguntas. Toque em um cliente abaixo para abrir o relato completo.
+            </p>
+
+            <div class="client-selector" role="tablist">
+                <button class="client-btn active" data-client="c1">01. Ricardo Mendes</button>
+                <button class="client-btn" data-client="c2">02. Camila Vasconcelos</button>
+                <button class="client-btn" data-client="c3">03. Eduardo Tavares</button>
+                <button class="client-btn" data-client="c4">04. Patrícia Nogueira</button>
+                <button class="client-btn" data-client="c5">05. Marcelo Albuquerque</button>
+            </div>
+
+            <!-- Cliente 1 -->
+            <article class="client-panel active" id="c1">
+                <div class="client-top">
+                    <h3>Ricardo Mendes</h3>
+                    <span>Gerente de Facilities • Centro de Distribuição de E-commerce (Cajamar/SP)</span>
+                </div>
+                <div class="qa-grid">
+                    <div class="qa-block">
+                        <div class="qa-label">Três palavras</div>
+                        <div class="qa-text"><strong>Ágil, resolutiva e confiável.</strong></div>
+                    </div>
+                    <div class="qa-block">
+                        <div class="qa-label">Diferencial percebido</div>
+                        <div class="qa-text">Resolve tudo em um só lugar (elétrica, incêndio, laudos, drone), com
+                            rapidez e sem retrabalho, evitando gerenciar cinco escritórios diferentes.</div>
+                    </div>
+                    <div class="qa-block">
+                        <div class="qa-label">Público percebido</div>
+                        <div class="qa-text">Na prática, grandes operações logísticas e indústrias; porém, olhando
+                            apenas o site e o Instagram antes da contratação, pareceria atender apenas pequenas reformas
+                            comerciais.</div>
+                    </div>
+                    <div class="qa-block">
+                        <div class="qa-label">O que mais combina com a marca</div>
+                        <div class="qa-text">Velocidade na entrega e trato direto, sem a burocracia ou arrogância de
+                            grandes consultorias, mas com entrega técnica de alto nível.</div>
+                    </div>
+                    <div class="qa-block gap-alert">
+                        <div class="qa-label">Contradição: Aparência vs. Experiência</div>
+                        <div class="qa-text">A apresentação pré-venda (PDF e redes sociais) parece muito mais simples e
+                            genérica do que a estrutura técnica entregue na obra. Quase deixou de contratar na primeira
+                            vez por achar que eram pequenos demais para o galpão.</div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Cliente 2 -->
+            <article class="client-panel" id="c2">
+                <div class="client-top">
+                    <h3>Camila Vasconcelos</h3>
+                    <span>Arquiteta Especialista em Residências de Alto Padrão (São Paulo/SP)</span>
+                </div>
+                <div class="qa-grid">
+                    <div class="qa-block">
+                        <div class="qa-label">Três palavras</div>
+                        <div class="qa-text"><strong>Competente, parceira e prática.</strong></div>
+                    </div>
+                    <div class="qa-block">
+                        <div class="qa-label">Diferencial percebido</div>
+                        <div class="qa-text">Compatibilização de projetos complementares dentro da mesma equipe,
+                            respeitando o orçamento e evitando conflitos em obra.</div>
+                    </div>
+                    <div class="qa-block">
+                        <div class="qa-label">Público percebido</div>
+                        <div class="qa-text">Clientes exigentes que precisam de segurança técnica — construtoras,
+                            grandes empresas e proprietários de casas de alto padrão.</div>
+                    </div>
+                    <div class="qa-block">
+                        <div class="qa-label">O que mais combina com a marca</div>
+                        <div class="qa-text">Cuidado personalizado e humildade no atendimento, mesmo atendendo gigantes
+                            como Amazon e Mercado Livre.</div>
+                    </div>
+                    <div class="qa-block gap-alert">
+                        <div class="qa-label">Contradição: Aparência vs. Experiência</div>
+                        <div class="qa-text">O visual da marca não acompanha o padrão dos projetos. Quando indica a BG
+                            para um cliente de casa milionária e ele pesquisa o Instagram ou o site, há estranhamento: o
+                            digital não transmite o peso nem a sofisticação real.</div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Cliente 3 -->
+            <article class="client-panel" id="c3">
+                <div class="client-top">
+                    <h3>Eduardo Tavares</h3>
+                    <span>Coordenador de Engenharia e Manutenção • Shopping Center (São Paulo/SP)</span>
+                </div>
+                <div class="qa-grid">
+                    <div class="qa-block">
+                        <div class="qa-label">Três palavras</div>
+                        <div class="qa-text"><strong>Técnica, eficiente e direta.</strong></div>
+                    </div>
+                    <div class="qa-block">
+                        <div class="qa-label">Diferencial percebido</div>
+                        <div class="qa-text">Capacidade de atuar em ambientes complexos sem travar a operação, com
+                            precisão rigorosa em normas técnicas e prazos.</div>
+                    </div>
+                    <div class="qa-block">
+                        <div class="qa-label">Público percebido</div>
+                        <div class="qa-text">Gestores de grandes empreendimentos, shoppings, redes de entretenimento e
+                            empresas que não podem errar em normas e prazos.</div>
+                    </div>
+                    <div class="qa-block">
+                        <div class="qa-label">O que mais combina com a marca</div>
+                        <div class="qa-text">Recorrência sem dor de cabeça: prazo cumprido, orçamento respeitado e zero
+                            surpresa negativa.</div>
+                    </div>
+                    <div class="qa-block gap-alert">
+                        <div class="qa-label">Contradição: Aparência vs. Experiência</div>
+                        <div class="qa-text">Falam pouco do que fazem. Para aprovar o orçamento com a diretoria, foi
+                            preciso explicar verbalmente os cases já atendidos, pois o material institucional era básico
+                            demais.</div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Cliente 4 -->
+            <article class="client-panel" id="c4">
+                <div class="client-top">
+                    <h3>Patrícia Nogueira</h3>
+                    <span>Gerente de Expansão • Rede de Varejo e Logística (Jundiaí/SP)</span>
+                </div>
+                <div class="qa-grid">
+                    <div class="qa-block">
+                        <div class="qa-label">Três palavras</div>
+                        <div class="qa-text"><strong>Versátil, rápida e transparente.</strong></div>
+                    </div>
+                    <div class="qa-block">
+                        <div class="qa-label">Diferencial percebido</div>
+                        <div class="qa-text">Modelo multisserviços sob medida, adaptável a cada nova unidade — da
+                            vistoria com drone até gás e elétrica — mantendo o padrão de qualidade.</div>
+                    </div>
+                    <div class="qa-block">
+                        <div class="qa-label">Público percebido</div>
+                        <div class="qa-text">Empresas em fase de expansão acelerada que precisam de um braço de
+                            engenharia confiável e ágil.</div>
+                    </div>
+                    <div class="qa-block">
+                        <div class="qa-label">O que mais combina com a marca</div>
+                        <div class="qa-text">Sentimento de prioridade: o projeto é tratado como único, e não como mais
+                            um número na fila.</div>
+                    </div>
+                    <div class="qa-block gap-alert">
+                        <div class="qa-label">Contradição: Aparência vs. Experiência</div>
+                        <div class="qa-text">Usam tecnologia de ponta na prática (drones e soluções modernas), mas a
+                            comunicação externa parece parada no tempo e não transmite inovação antes da reunião.</div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Cliente 5 -->
+            <article class="client-panel" id="c5">
+                <div class="client-top">
+                    <h3>Marcelo Albuquerque</h3>
+                    <span>Síndico Profissional • Condomínio Residencial de Alto Padrão (Grande SP)</span>
+                </div>
+                <div class="qa-grid">
+                    <div class="qa-block">
+                        <div class="qa-label">Três palavras</div>
+                        <div class="qa-text"><strong>Séria, acessível e completa.</strong></div>
+                    </div>
+                    <div class="qa-block">
+                        <div class="qa-label">Diferencial percebido</div>
+                        <div class="qa-text">Traduzem o "engenheirês" para a realidade do orçamento do condomínio sem
+                            abrir mão da qualidade, centralizando múltiplas frentes técnicas.</div>
+                    </div>
+                    <div class="qa-block">
+                        <div class="qa-label">Público percebido</div>
+                        <div class="qa-text">Condomínios maiores, administradoras e empresas que buscam engenharia
+                            estruturada com atendimento próximo.</div>
+                    </div>
+                    <div class="qa-block">
+                        <div class="qa-label">O que mais combina com a marca</div>
+                        <div class="qa-text">Humildade no atendimento: mesmo atendendo multinacionais, não tratam a
+                            demanda de um condomínio como algo menor.</div>
+                    </div>
+                    <div class="qa-block gap-alert">
+                        <div class="qa-label">Contradição: Aparência vs. Experiência</div>
+                        <div class="qa-text">Na assembleia com os moradores, houve dificuldade para defender a
+                            contratação mostrando apenas o site e o PDF, pois concorrentes tecnicamente inferiores
+                            tinham apresentações mais modernas.</div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Síntese -->
+            <div class="tile-grid-3" style="margin-top: 14px;">
+                <div class="tile tile-colored bg-green">
+                    <span class="tile-meta">Convergência (100%)</span>
+                    <h3>Entrega Técnica Impecável</h3>
+                    <p>Todos validam agilidade, modelo <em>one-stop-shop</em>, compatibilização, prazos e humildade no
+                        relacionamento.</p>
+                </div>
+                <div class="tile tile-colored bg-crimson">
+                    <span class="tile-meta">Atrito Unânime (100%)</span>
+                    <h3>Fricção na Pré-Venda</h3>
+                    <p>Todos relatam insegurança inicial ou dificuldade de aprovação em diretorias, assembleias e
+                        clientes de luxo.</p>
+                </div>
+                <div class="tile tile-colored bg-steel">
+                    <span class="tile-meta">Contradição Central</span>
+                    <h3>Inovação Invisível</h3>
+                    <p>Qualidade e Eficiência aparecem na obra, mas Inovação e Porte/Autoridade somem antes da reunião.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 03. Evidências Externas -->
+    <section id="evidencias">
+        <div class="container">
+            <span class="metro-kicker">03 • Auditoria de Pontos de Contato</span>
+            <h2 class="metro-title">Observação e Evidências Externas</h2>
+            <p class="metro-lead">
+                Levantamento técnico de todos os canais digitais, materiais comerciais, atendimento, ambiente físico e
+                concorrentes. Toque nos blocos para expandir.
+            </p>
+
+            <div class="metro-acc">
+                <div class="acc-box open">
+                    <button class="acc-btn">
+                        <span>Site Oficial (bgeng.com.br)</span>
+                        <span class="acc-plus">+</span>
+                    </button>
+                    <div class="acc-body">
+                        <p><strong>Pontos positivos:</strong> Lista todos os 8 serviços (incluindo Drone DJI 3), exibe a
+                            equipe multidisciplinar e informa o endereço comercial na Av. Brigadeiro Faria Lima, 1811
+                            (Jardim Paulistano/SP).</p>
+                        <p><strong>Fragilidades:</strong> Contradição cronológica (<em>"desde 2009 / 15+ anos"</em> vs.
+                            fundação em 2015); primeira dobra focada em <em>"Projetos Residenciais para o Seu Lar"</em>;
+                            ausência dos grandes cases logísticos/shoppings; erros de revisão (<em>"Edficício São
+                                Paulo"</em>, nomes duplicados como <code>BRUNO GHIGIARELLIDiretor Geral</code>, erro de
+                            gênero em Paulo Mateus como <em>"dedicada"</em>, engenheiro Elias sem sobrenome e logos de
+                            parceiros sem identificação). Traz a citação de Provérbios 24:3.</p>
+                    </div>
+                </div>
+
+                <div class="acc-box">
+                    <button class="acc-btn">
+                        <span>Instagram (@bgengenhariasp) e lnk.bio</span>
+                        <span class="acc-plus">+</span>
+                    </button>
+                    <div class="acc-body">
+                        <p><strong>Números e Bio:</strong> Apenas <strong>99 seguidores</strong> frente a 186 seguidos e
+                            56 posts. Bio sem diferenciais ou localização estratégica. No <code>lnk.bio</code>, o botão
+                            exibe erro de ortografia: <strong>"PORTIFÓLIO BG ENGENHARIA"</strong>.</p>
+                        <p><strong>Feed e Destaques:</strong> Frequência de 2 posts/semana, mas após os 3 fixados há
+                            sequência de fotos cruas sem contexto, escondendo ativos reais fortíssimos: obras na
+                            <strong>GWM</strong>, <strong>Givaudan</strong>, inspeção em <strong>estádio de
+                                futebol</strong>, <strong>nuvem de pontos 3D</strong> e <strong>drone em
+                                heliponto</strong>. Destaques possuem apenas capa e primeiro post, sem depoimentos.</p>
+                        <div class="evidence-gallery">
+                            <figure class="evidence-card" data-caption="Perfil @bgengenhariasp: 99 seguidores, 56 posts e bio genérica.">
+                                <img class="evidence-thumb" src="assets/evidencias/insta-perfil.png" alt="Perfil do Instagram @bgengenhariasp" loading="lazy" />
+                                <figcaption class="evidence-caption"><strong>Perfil @bgengenhariasp</strong>99 seguidores e bio sem diferenciais.</figcaption>
+                            </figure>
+                            <figure class="evidence-card" data-caption="lnk.bio/bgengenhariasp com erro de ortografia: PORTIFÓLIO BG ENGENHARIA.">
+                                <img class="evidence-thumb" src="assets/evidencias/lnk-bio.png" alt="Página lnk.bio da BG Engenharia" loading="lazy" />
+                                <figcaption class="evidence-caption"><strong>lnk.bio</strong>Botão com grafia incorreta ("PORTIFÓLIO").</figcaption>
+                            </figure>
+                            <figure class="evidence-card" data-caption="Topo do feed: 3 fixados seguidos de fotos cruas (GWM, escaneamento 3D e heliponto).">
+                                <img class="evidence-thumb" src="assets/evidencias/insta-feed-1.jpeg" alt="Topo do feed do Instagram" loading="lazy" />
+                                <figcaption class="evidence-caption"><strong>Topo do Feed</strong>Fixados e cases (GWM, 3D) sem contexto.</figcaption>
+                            </figure>
+                            <figure class="evidence-card" data-caption="Feed do Instagram: obras na Givaudan, estádio de futebol, cartão de visitas e placa em vidro.">
+                                <img class="evidence-thumb" src="assets/evidencias/insta-feed-2.jpeg" alt="Feed do Instagram com Givaudan e estádio" loading="lazy" />
+                                <figcaption class="evidence-caption"><strong>Feed — Cases Ocultos</strong>Givaudan, estádio e ativos físicos.</figcaption>
+                            </figure>
+                            <figure class="evidence-card" data-caption="Feed do Instagram: nuvem de pontos 3D, drone em heliponto e galpão industrial.">
+                                <img class="evidence-thumb" src="assets/evidencias/insta-feed-3.jpeg" alt="Feed com nuvem de pontos 3D e heliponto" loading="lazy" />
+                                <figcaption class="evidence-caption"><strong>Feed — Tecnologia</strong>Nuvem 3D e drone em heliponto.</figcaption>
+                            </figure>
+                            <figure class="evidence-card" data-caption="Feed do Instagram: uniforme polo bordado BG e modelos estruturais.">
+                                <img class="evidence-thumb" src="assets/evidencias/insta-feed-4.jpeg" alt="Feed com uniforme polo e projetos estruturais" loading="lazy" />
+                                <figcaption class="evidence-caption"><strong>Feed — Ativos &amp; Projetos</strong>Uniforme bordado e modelos estruturais.</figcaption>
+                            </figure>
+                            <figure class="evidence-card" data-caption="Template de Destaque 'Depoimentos' não preenchido ('SEMPRE incluir aspas para escrever aqui!').">
+                                <img class="evidence-thumb" src="assets/evidencias/story-depoimento-vazio.png" alt="Template vazio de depoimentos nos Stories" loading="lazy" />
+                                <figcaption class="evidence-caption"><strong>Destaque Depoimentos</strong>Template vazio sem prova social.</figcaption>
+                            </figure>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="acc-box">
+                    <button class="acc-btn">
+                        <span>Portfólio PDF e Materiais Comerciais</span>
+                        <span class="acc-plus">+</span>
+                    </button>
+                    <div class="acc-body">
+                        <p><strong>Pontos positivos:</strong> Reúne cases de peso ausentes no site (Shopping
+                            Internacional de Guarulhos, Consigaz, IRANI, Mercedes-Benz Divena, Casa Dr. R 3D vs. Real e
+                            Casa J+A em EPS ARXX), além de ativos físicos como cartão de visitas, uniforme polo bordado
+                            e placa em vidro.</p>
+                        <p><strong>Fragilidades:</strong> Erros de revisão (<em>"PORTIFÓLIO"</em>, <em>"Edficício"</em>,
+                            <em>"emergêcia"</em>, <em>"Em conformidades"</em>, CEP <code>01452-00</code>, <em>"NOSSOS
+                                SERVICOS"</em>, <em>"Arraste para olado!"</em>), vestígios de marca d'água do
+                            <strong>Canva</strong>, clichês vazios (<em>"A melhor equipe do mercado"</em>) e
+                            desatualização da equipe entre PDF e site.</p>
+                        <div class="evidence-gallery">
+                            <figure class="evidence-card" data-caption="Post institucional fixado: clichê 'A melhor equipe do mercado' e '15+ Anos' em conflito com fundação em 2015.">
+                                <img class="evidence-thumb" src="assets/evidencias/post-nos-somos.png" alt="Post Nós somos a BG Engenharia" loading="lazy" />
+                                <figcaption class="evidence-caption"><strong>Post Institucional</strong>Clichê e conflito cronológico (15+ anos).</figcaption>
+                            </figure>
+                            <figure class="evidence-card" data-caption="Arte de lançamento com marca d'água do Canva visível no megafone.">
+                                <img class="evidence-thumb" src="assets/evidencias/post-site-pronto.png" alt="Post O site da BG Engenharia já está pronto" loading="lazy" />
+                                <figcaption class="evidence-caption"><strong>Arte de Lançamento</strong>Marca d'água do Canva no ícone.</figcaption>
+                            </figure>
+                            <figure class="evidence-card is-wide" data-caption="Carrossel 'Nossos Serviços' (Parte 1): marcas d'água do Canva nas fotografias e texto 'Arraste para olado!'.">
+                                <img class="evidence-thumb" src="assets/evidencias/post-nossos-servicos-1.png" alt="Carrossel Nossos Serviços parte 1 com marca d'água Canva" loading="lazy" />
+                                <figcaption class="evidence-caption"><strong>Carrossel "Nossos Serviços" (1/2)</strong>Marcas d'água do Canva visíveis nas fotos dos serviços.</figcaption>
+                            </figure>
+                            <figure class="evidence-card is-wide" data-caption="Carrossel 'Nossos Serviços' (Parte 2): vistorias com drone e laudos técnicos com marcas d'água do Canva.">
+                                <img class="evidence-thumb" src="assets/evidencias/post-nossos-servicos-2.png" alt="Carrossel Nossos Serviços parte 2 com marca d'água Canva" loading="lazy" />
+                                <figcaption class="evidence-caption"><strong>Carrossel "Nossos Serviços" (2/2)</strong>Vistorias com drone e laudos com marca d'água do Canva.</figcaption>
+                            </figure>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="acc-box">
+                    <button class="acc-btn">
+                        <span>Google Meu Negócio (Localização e Avaliações)</span>
+                        <span class="acc-plus">+</span>
+                    </button>
+                    <div class="acc-body">
+                        <p><strong>Prova social frágil:</strong> Nota 5,0 baseada em apenas <strong>5
+                                avaliações</strong> de 9 meses atrás — sendo uma feita por <strong>Michele</strong>,
+                            Diretora Comercial da própria empresa. Respostas genéricas (<em>"Obrigado pela
+                                avaliação"</em>) e avaliações sem resposta.</p>
+                        <div class="evidence-gallery">
+                            <figure class="evidence-card" data-caption="Perfil no Google Meu Negócio: sede em Poços de Caldas (MG), nota 5,0 com 5 avaliações.">
+                                <img class="evidence-thumb" src="assets/evidencias/gmn-perfil.jpeg" alt="Perfil Google Meu Negócio BG Engenharia" loading="lazy" />
+                                <figcaption class="evidence-caption"><strong>Perfil Google Meu Negócio</strong>Base em Poços de Caldas (MG) e 5 avaliações.</figcaption>
+                            </figure>
+                            <figure class="evidence-card" data-caption="Avaliações no Google: inclui avaliação de Michele Scassiotti (Diretora Comercial) e resposta padrão.">
+                                <img class="evidence-thumb" src="assets/evidencias/gmn-avaliacoes-1.jpeg" alt="Avaliações no Google incluindo Michele Scassiotti" loading="lazy" />
+                                <figcaption class="evidence-caption"><strong>Avaliações (1/2)</strong>Autoavaliação interna e resposta genérica.</figcaption>
+                            </figure>
+                            <figure class="evidence-card" data-caption="Demais avaliações no Google Meu Negócio, todas registradas há 9 meses.">
+                                <img class="evidence-thumb" src="assets/evidencias/gmn-avaliacoes-2.png" alt="Avaliações antigas no Google Meu Negócio" loading="lazy" />
+                                <figcaption class="evidence-caption"><strong>Avaliações (2/2)</strong>Sem novas avaliações há 9 meses.</figcaption>
+                            </figure>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="acc-box">
+                    <button class="acc-btn">
+                        <span>Atendimento, Ambiente Físico e Concorrentes</span>
+                        <span class="acc-plus">+</span>
+                    </button>
+                    <div class="acc-body">
+                        <p><strong>Atendimento e Pós-Venda:</strong> WhatsApp sem mensagem de boas-vindas, 100% humano,
+                            sem IA e concentrado em 1 pessoa sem formação técnica em engenharia (risco de leads sem
+                            resposta fora do horário). Sem kit de boas-vindas, embalagens, mensagens de fim de ano ou
+                            campanhas.</p>
+                        <p><strong>Ambiente Físico:</strong> Escritório enxuto, limpo, bem iluminado e organizado
+                            (estante industrial com LED, livros técnicos, dois monitores e placa BG) — coerente com o
+                            perfil ágil, porém distinto da expectativa de uma sede na Faria Lima.</p>
+                        <p><strong>Concorrentes:</strong> Operam com kits de boas-vindas, embalagens personalizadas,
+                            comunicação visual polida, atendimento por IA e sistemas de gestão (ERP e CRM).</p>
+                        <div class="evidence-gallery">
+                            <figure class="evidence-card" data-caption="Ambiente físico da BG Engenharia: escritório organizado com estante industrial com LED, livros técnicos, dois monitores e placa BG.">
+                                <img class="evidence-thumb" src="assets/evidencias/escritorio-fisico.jpeg" alt="Escritório físico da BG Engenharia" loading="lazy" />
+                                <figcaption class="evidence-caption"><strong>Ambiente Físico</strong>Estante com LED, dois monitores e placa BG.</figcaption>
+                            </figure>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4 Camadas -->
+            <div class="tile-grid-2" style="margin-top: 16px;">
+                <div class="tile tile-dark">
+                    <span class="tile-meta">Camada 1 • O que a marca afirma</span>
+                    <p>Inovadora, eficiente, multisserviços de alta qualidade, com origem humilde em 2015 e capacidade
+                        para atender gigantes globais e alto padrão.</p>
+                </div>
+                <div class="tile tile-dark">
+                    <span class="tile-meta">Camada 2 • O que foi observado</span>
+                    <p>Conflito Faria Lima vs. Poços de Caldas e 2009 vs. 2015; 99 seguidores; fotos cruas escondendo
+                        grandes cases; erros de português e Canva; atendimento manual sem IA/CRM/pós-venda.</p>
+                </div>
+                <div class="tile tile-dark">
+                    <span class="tile-meta">Camada 3 • O que o público relatou</span>
+                    <p>Excelência técnica absoluta, velocidade e humildade na obra, mas insegurança na pré-venda e
+                        dificuldade de aprovação em diretorias e assembleias.</p>
+                </div>
+                <div class="tile tile-colored bg-crimson">
+                    <span class="tile-meta">Camada 4 • Interpretação do grupo</span>
+                    <p><strong>Paradoxo do Rigor Técnico:</strong> promete precisão máxima na engenharia, mas comunica
+                        improviso nos pontos de contato pré e pós-venda.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 04. Análise Estratégica -->
+    <section id="analise">
+        <div class="container">
+            <span class="metro-kicker">04 • Análise de Branding</span>
+            <h2 class="metro-title">Pilares Estratégicos da Marca</h2>
+            <p class="metro-lead">
+                Leitura estruturada de posicionamento, personalidade, Brand Equity e arquitetura de portfólio a partir
+                das evidências levantadas.
+            </p>
+
+            <div class="tile-grid-2">
+                <div class="tile tile-dark">
+                    <span class="tile-meta">Propósito &amp; Posicionamento</span>
+                    <h3>Capacidade de Gigante, Agilidade de Parceiro</h3>
+                    <p><strong>Propósito:</strong> Simplificar projetos complexos com rigor técnico, proximidade humana
+                        e zero retrabalho.<br />
+                        <strong>Posicionamento:</strong> A engenharia multisserviços completa (8 disciplinas + laudos e
+                        drones) que une o padrão exigido por multinacionais ao atendimento próximo de um parceiro
+                        dedicado.
+                    </p>
+                </div>
+
+                <div class="tile tile-dark">
+                    <span class="tile-meta">Identidade &amp; Personalidade</span>
+                    <h3>O Sábio + O Cuidador / Cara Comum</h3>
+                    <p>Precisão técnica, normas e domínio de tecnologia (3D, drones) combinados com humildade e
+                        transparência. A citação de <em>Provérbios 24:3</em> expressa um valor autêntico dos fundadores,
+                        exigindo equilíbrio no uso corporativo.</p>
+                </div>
+
+                <div class="tile tile-colored bg-teal">
+                    <span class="tile-meta">Brand Equity • Ativos</span>
+                    <h3>O que Sustenta a Marca Hoje</h3>
+                    <ul>
+                        <li>Cases de altíssimo peso (Amazon, Shopee, Mercado Livre, Iguatemi, GWM, Givaudan,
+                            Mercedes-Benz).</li>
+                        <li>Equipe multidisciplinar própria e domínio real de tecnologia (Drone DJI, 3D, EPS/ARXX).</li>
+                        <li>Reputação excelente e altíssima taxa de recorrência no pós-venda.</li>
+                    </ul>
+                </div>
+
+                <div class="tile tile-colored bg-rust">
+                    <span class="tile-meta">Brand Equity • Fragilidades</span>
+                    <h3>Onde a Marca Perde Valor</h3>
+                    <ul>
+                        <li>Baixa autoridade digital (99 seguidores, destaques vazios) e ruídos de credibilidade (erros
+                            de português, Canva, autoavaliação no Google).</li>
+                        <li>Gargalo no atendimento (pessoa única sem treino técnico, sem IA ou CRM).</li>
+                        <li>Ausência de experiência tangível (kits, embalagens, pós-venda) frente aos concorrentes.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tile tile-colored bg-steel" style="margin-top: 10px;">
+                <span class="tile-meta">Arquitetura de Marca &amp; Portfólio</span>
+                <h3>Branded House (Marca Monolítica)</h3>
+                <p>A concentração de todas as 8 disciplinas sob o nome <strong>BG Engenharia</strong> é o modelo ideal,
+                    pois reforça o diferencial <em>one-stop-shop</em>. O ajuste necessário está na padronização da
+                    oferta (sempre listar os 8 serviços) e na segmentação clara entre
+                    <strong>Corporativo/Logística</strong> e <strong>Alto Padrão Residencial</strong>.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 05. O Coração do Trabalho -->
+    <section id="diagnostico">
+        <div class="container">
+            <span class="metro-kicker">05 • O Coração do Trabalho</span>
+            <h2 class="metro-title">Confronto e Diagnóstico Central</h2>
+            <p class="metro-lead">
+                A cadeia lógica que conecta o que a empresa quer construir, como ela se manifesta na prática e o que o
+                público percebe.
+            </p>
+
+            <div class="metro-flow">
+                <div class="flow-tile">
+                    <span class="tile-meta">1. Identidade Pretendida</span>
+                    <p>Inovadora, Qualidade, Eficiente, Multisserviços, Humilde e Parceira de Gigantes Globais.</p>
+                </div>
+                <div class="flow-chevron">↓</div>
+
+                <div class="flow-tile">
+                    <span class="tile-meta">2. Expressão e Experiência na Prática</span>
+                    <p><strong>Na obra:</strong> ágil, tecnológica (drone, 3D, scanners), completa e próxima.<br />
+                        <strong>Nos pontos de contato:</strong> erros de português, 99 seguidores, fotos cruas sem
+                        contexto, conflito SP/MG, atendimento sem IA/CRM e sem pós-venda.
+                    </p>
+                </div>
+                <div class="flow-chevron">↓</div>
+
+                <div class="flow-tile">
+                    <span class="tile-meta">3. Percepção do Público</span>
+                    <p><strong>Pós-venda:</strong> altamente confiável, rápida, completa e humilde.<br />
+                        <strong>Pré-venda:</strong> parece pequena, improvisada e menos inovadora do que os
+                        concorrentes.
+                    </p>
+                </div>
+                <div class="flow-chevron">↓</div>
+
+                <div class="flow-tile">
+                    <span class="tile-meta">4. Coerências vs. Gaps</span>
+                    <p><strong>Coerências:</strong> Qualidade técnica, Eficiência na entrega, Multisserviços e
+                        Humildade.<br />
+                        <strong>Gaps:</strong> Rigor editorial/visual, Inovação visível, Autoridade digital e
+                        Experiência de atendimento/pós-venda.
+                    </p>
+                </div>
+                <div class="flow-chevron">↓</div>
+
+                <div class="flow-tile is-diagnosis">
+                    <span class="tile-meta">5. Diagnóstico Central</span>
+                    <h3 style="font-size: 1.4rem; margin-bottom: 6px;">O Paradoxo do Rigor Técnico</h3>
+                    <p>A BG Engenharia não tem um problema de produto ou entrega. Ela sofre de um <strong>Gap de
+                            Credibilidade Visual, Digital e Operacional</strong>: promete precisão absoluta na obra, mas
+                        transmite improviso antes da contratação e no pós-venda, perdendo força frente a concorrentes
+                        tecnicamente inferiores.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 06. Proposta Estratégica -->
+    <section id="proposta">
+        <div class="container">
+            <span class="metro-kicker">06 • Evidências → Diagnóstico → Decisão → Proposta</span>
+            <h2 class="metro-title">Direção e Proposta Estratégica</h2>
+            <p class="metro-lead">
+                Decisões sustentadas exclusivamente nas evidências levantadas, elevando a expressão e a operação ao
+                tamanho real da engenharia entregue pela BG.
+            </p>
+
+            <div class="tile-grid-4" style="margin-bottom: 16px;">
+                <div class="tile" style="border-top: 5px solid var(--hi-green);">
+                    <span class="tile-meta" style="color: var(--hi-green);">Permanece</span>
+                    <p>Humildade no atendimento, modelo multisserviços integrado, agilidade, transparência orçamentária
+                        e organização do escritório operacional.</p>
+                </div>
+                <div class="tile" style="border-top: 5px solid var(--hi-amber);">
+                    <span class="tile-meta" style="color: var(--hi-amber);">Muda</span>
+                    <p>Rigor editorial/visual (fim de erros e marcas d'água), primeira dobra do site, estrutura do
+                        Instagram, atendimento no WhatsApp e coerência SP/MG.</p>
+                </div>
+                <div class="tile" style="border-top: 5px solid var(--hi-cyan);">
+                    <span class="tile-meta" style="color: var(--hi-cyan);">Ganha Força</span>
+                    <p>Cases corporativos e de alto padrão (GWM, Givaudan, Shoppings, Helipontos, grandes CDs), inovação
+                        real (3D vs. Real, drones) e relacionamento pós-venda.</p>
+                </div>
+                <div class="tile" style="border-top: 5px solid var(--hi-coral);">
+                    <span class="tile-meta" style="color: var(--hi-coral);">Abandona</span>
+                    <p>Fotos cruas sem contexto, clichês vazios ("melhor equipe do mercado"), atendimento sem
+                        triagem/automação e improviso no Google Meu Negócio.</p>
+                </div>
+            </div>
+
+            <div class="tile-grid-3">
+                <div class="tile tile-colored bg-blue">
+                    <span class="tile-meta">Pilar 01</span>
+                    <h3>Vitrine Digital &amp; Rigor Editorial</h3>
+                    <p>Correção integral de ortografia (<em>Portfólio, Edifício, emergência</em>, CEP e
+                        <code>lnk.bio</code>), remoção de marcas d'água, unificação da narrativa (<em>15+ anos de
+                            experiência; fundada em 2015</em>) e clareza entre <strong>Comercial SP (Faria
+                            Lima)</strong> e <strong>Base MG (Poços de Caldas)</strong>. Novo feed contextualizando
+                        cases reais (GWM, 3D, Drones) e Destaques completos.</p>
+                </div>
+
+                <div class="tile tile-colored bg-purple">
+                    <span class="tile-meta">Pilar 02</span>
+                    <h3>Atendimento Inteligente (IA + CRM)</h3>
+                    <p>Implantação de mensagem de boas-vindas e <strong>triagem inicial com IA no WhatsApp
+                            24h/7d</strong> (qualificando tipo de obra, segmento, disciplinas e urgência), eliminando
+                        perda de leads fora do horário comercial, somada a treinamento técnico básico para o comercial e
+                        adoção de <strong>CRM</strong>.</p>
+                </div>
+
+                <div class="tile tile-colored bg-green">
+                    <span class="tile-meta">Pilar 03</span>
+                    <h3>Experiência Tangível &amp; Pós-Venda</h3>
+                    <p>Criação de <strong>Kit de Boas-Vindas / Entrega Técnica</strong> executivo (pasta rígida, manual
+                        do projeto, QR Code para nuvem/3D e brinde funcional), calendário de relacionamento (boas festas
+                        e check-ins pós-obra) e processo ativo de coleta de avaliações reais de clientes no Google Meu
+                        Negócio.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container footer-inner">
+            <div>
+                <p class="footer-quote">"Fazer a BG Engenharia parecer, desde o primeiro clique, do tamanho exato do que
+                    ela já entrega."</p>
+                <p class="footer-meta" style="margin-top: 10px;">Trabalho Experimental de Branding • Publicidade e
+                    Propaganda • PUC Minas</p>
+            </div>
+            <a href="#topo" class="metro-btn">↑ Topo</a>
+        </div>
+    </footer>
+
+    <!-- Lightbox Metro para Evidências -->
+    <div class="metro-lightbox" id="metroLightbox" role="dialog" aria-modal="true" aria-label="Visualização ampliada de evidência">
+        <button class="lightbox-close" id="lightboxClose" type="button">✕ Fechar</button>
+        <img class="lightbox-img" id="lightboxImg" src="" alt="" />
+        <p class="lightbox-caption" id="lightboxCaption"></p>
+    </div>
+
+    <script>
+        // Barra de progresso
+        const progressBar = document.getElementById('progressBar');
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            progressBar.style.width = (docHeight > 0 ? (scrollTop / docHeight) * 100 : 0) + '%';
+        });
+
+        // Troca de abas dos clientes
+        const clientBtns = document.querySelectorAll('.client-btn');
+        const clientPanels = document.querySelectorAll('.client-panel');
+        clientBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                clientBtns.forEach(b => b.classList.remove('active'));
+                clientPanels.forEach(p => p.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.client).classList.add('active');
+            });
+        });
+
+        // Acordeão de evidências
+        const accBoxes = document.querySelectorAll('.acc-box');
+        accBoxes.forEach(box => {
+            box.querySelector('.acc-btn').addEventListener('click', () => {
+                const isOpen = box.classList.contains('open');
+                accBoxes.forEach(b => b.classList.remove('open'));
+                if (!isOpen) box.classList.add('open');
+            });
+        });
+
+        // Destaque da seção ativa na barra Pivot
+        const sections = document.querySelectorAll('section[id]');
+        const pivotLinks = document.querySelectorAll('.pivot-link');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    pivotLinks.forEach(link => {
+                        link.classList.toggle('active', link.getAttribute('href') === '#' + entry.target.id);
+                    });
+                }
+            });
+        }, { rootMargin: '-30% 0px -60% 0px' });
+
+        sections.forEach(sec => observer.observe(sec));
+
+        // Lightbox Metro para ampliar evidências
+        const lightbox = document.getElementById('metroLightbox');
+        const lightboxImg = document.getElementById('lightboxImg');
+        const lightboxCaption = document.getElementById('lightboxCaption');
+        const lightboxClose = document.getElementById('lightboxClose');
+
+        document.querySelectorAll('.evidence-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const img = card.querySelector('img');
+                lightboxImg.src = img.src;
+                lightboxImg.alt = img.alt;
+                lightboxCaption.textContent = card.dataset.caption || img.alt;
+                lightbox.classList.add('open');
+            });
+        });
+
+        const closeLightbox = () => {
+            lightbox.classList.remove('open');
+            lightboxImg.src = '';
+        };
+
+        lightboxClose.addEventListener('click', closeLightbox);
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) closeLightbox();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && lightbox.classList.contains('open')) closeLightbox();
+        });
+    </script>
+</body>
+
+</html>
