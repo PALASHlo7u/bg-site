@@ -709,6 +709,47 @@
             color: var(--metro-body);
         }
 
+        /* Botões Flutuantes (Canto Inferior Direito) */
+        .floating-dock {
+            position: fixed;
+            right: 18px;
+            bottom: 18px;
+            z-index: 1500;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+        }
+
+        .float-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            padding: 11px 16px;
+            text-decoration: none;
+            color: #ffffff;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            border: 2px solid #ffffff;
+            transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+        }
+
+        .float-btn:hover {
+            background: #ffffff !important;
+            color: #0e0e0e !important;
+            transform: translateX(-2px);
+        }
+
+        .float-btn.is-portfolio {
+            background: var(--metro-blue);
+        }
+
+        .float-btn.is-insta {
+            background: var(--metro-purple);
+        }
+
         /* Fluxo do Diagnóstico */
         .metro-flow {
             display: flex;
@@ -1535,6 +1576,27 @@
             <a href="#topo" class="metro-btn">↑ Topo</a>
         </div>
     </footer>
+
+    <!-- Botões Flutuantes: Portfólio & Instagram -->
+    <div class="floating-dock" aria-label="Atalhos flutuantes">
+        <a href="portfolio.html" class="float-btn is-portfolio">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="16" y1="13" x2="8" y2="13" />
+                <line x1="16" y1="17" x2="8" y2="17" />
+            </svg>
+            Ver Portfólio
+        </a>
+        <a href="https://www.instagram.com/bgengenhariasp/" target="_blank" rel="noopener noreferrer" class="float-btn is-insta">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <rect x="2" y="2" width="20" height="20" rx="5" />
+                <circle cx="12" cy="12" r="4" />
+                <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
+            </svg>
+            Instagram BG
+        </a>
+    </div>
 
     <!-- Lightbox Metro para Evidências -->
     <div class="metro-lightbox" id="metroLightbox" role="dialog" aria-modal="true" aria-label="Visualização ampliada de evidência">
