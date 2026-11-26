@@ -42,22 +42,31 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            padding-top: 94px;
         }
 
+        /* Metro Top App Bar / Pivot Navigation (Consistente em todo o site) */
         .metro-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
             background: #080808;
             border-bottom: 2px solid var(--metro-border);
-            padding: 12px 16px;
         }
 
         .metro-bar-inner {
-            max-width: 1280px;
+            max-width: 1120px;
             margin: 0 auto;
+            padding: 12px 16px 0;
+        }
+
+        .metro-header-top {
             display: flex;
-            flex-wrap: wrap;
             align-items: center;
             justify-content: space-between;
-            gap: 12px;
+            margin-bottom: 10px;
         }
 
         .metro-brand {
@@ -79,10 +88,62 @@
             display: inline-block;
         }
 
-        .bar-actions {
+        .header-slides-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.74rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            background: var(--metro-blue);
+            color: #ffffff;
+            text-decoration: none;
+            padding: 6px 12px;
+            border: 2px solid var(--metro-blue);
+            transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+        }
+
+        .header-slides-btn:hover {
+            background: #ffffff;
+            color: #0e0e0e;
+            border-color: #ffffff;
+        }
+
+        .pivot-nav {
             display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
+            gap: 4px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .pivot-nav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .pivot-link {
+            flex: 0 0 auto;
+            text-decoration: none;
+            color: var(--metro-muted);
+            font-size: 0.84rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 10px 14px;
+            border-bottom: 3px solid transparent;
+            transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+        }
+
+        .pivot-link:hover {
+            color: #ffffff;
+            background: var(--metro-surface);
+        }
+
+        .pivot-link.active {
+            color: #ffffff;
+            background: var(--metro-surface);
+            border-bottom-color: var(--hi-cyan);
         }
 
         .metro-btn {
@@ -122,19 +183,19 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            max-width: 1280px;
+            max-width: 1120px;
             width: 100%;
             margin: 0 auto;
-            padding: 16px;
+            padding: 20px 16px 80px;
             gap: 12px;
         }
 
         .viewer-header {
             display: flex;
             flex-wrap: wrap;
-            align-items: baseline;
+            align-items: center;
             justify-content: space-between;
-            gap: 8px;
+            gap: 12px;
             border-left: 4px solid var(--hi-cyan);
             padding-left: 12px;
         }
@@ -152,7 +213,7 @@
         .pdf-frame {
             width: 100%;
             flex: 1;
-            min-height: 76vh;
+            min-height: 74vh;
             border: 2px solid var(--metro-border);
             background: #141414;
         }
@@ -213,23 +274,36 @@
 </head>
 
 <body>
-    <header class="metro-bar">
+    <nav class="metro-bar" aria-label="Navegação principal">
         <div class="metro-bar-inner">
-            <a href="index.html" class="metro-brand">
-                <span class="metro-brand-square"></span>
-                BG Engenharia // Portfólio
-            </a>
-            <div class="bar-actions">
-                <a href="index.html" class="metro-btn">← Voltar ao Diagnóstico</a>
-                <a href="assets/portfolio-bg-engenharia.pdf" download="Portifolio-BG-Engenharia.pdf" class="metro-btn is-primary">Baixar PDF</a>
+            <div class="metro-header-top">
+                <a href="index.html#topo" class="metro-brand">
+                    <span class="metro-brand-square"></span>
+                    BG Engenharia // Branding
+                </a>
+                <a href="assets/brand-audit-slides.pdf" target="_blank" rel="noopener noreferrer" class="header-slides-btn">
+                    Ver Slides ↗
+                </a>
+            </div>
+            <div class="pivot-nav">
+                <a href="index.html#visao-interna" class="pivot-link">01 Visão Interna</a>
+                <a href="index.html#escuta" class="pivot-link">02 Clientes</a>
+                <a href="index.html#evidencias" class="pivot-link">03 Evidências</a>
+                <a href="index.html#analise" class="pivot-link">04 Análise</a>
+                <a href="index.html#diagnostico" class="pivot-link">05 Diagnóstico</a>
+                <a href="index.html#proposta" class="pivot-link">06 Proposta</a>
+                <a href="portfolio.html" class="pivot-link active">Portfólio</a>
             </div>
         </div>
-    </header>
+    </nav>
 
     <main class="viewer-wrap">
         <div class="viewer-header">
-            <h1>Portfólio Oficial — BG Engenharia</h1>
-            <p>Visualização completa do material comercial separado do painel de diagnóstico.</p>
+            <div>
+                <h1>Portfólio Oficial — BG Engenharia</h1>
+                <p>Visualização completa do material comercial separado do painel de diagnóstico.</p>
+            </div>
+            <a href="assets/portfolio-bg-engenharia.pdf" download="Portifolio-BG-Engenharia.pdf" class="metro-btn is-primary">Baixar PDF</a>
         </div>
 
         <iframe class="pdf-frame" src="assets/portfolio-bg-engenharia.pdf#view=FitH" title="Portfólio BG Engenharia em PDF"></iframe>

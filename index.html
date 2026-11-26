@@ -72,6 +72,7 @@
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
+            padding-top: 94px;
         }
 
         code {
@@ -96,8 +97,10 @@
 
         /* Metro Top App Bar / Pivot Navigation */
         .metro-bar {
-            position: sticky;
+            position: fixed;
             top: 0;
+            left: 0;
+            right: 0;
             z-index: 1000;
             background: #080808;
             border-bottom: 2px solid var(--metro-border);
@@ -135,14 +138,26 @@
             display: inline-block;
         }
 
-        .metro-status {
-            font-size: 0.72rem;
+        .header-slides-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.74rem;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.08em;
             background: var(--metro-blue);
             color: #ffffff;
-            padding: 4px 10px;
+            text-decoration: none;
+            padding: 6px 12px;
+            border: 2px solid var(--metro-blue);
+            transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+        }
+
+        .header-slides-btn:hover {
+            background: #ffffff;
+            color: #0e0e0e;
+            border-color: #ffffff;
         }
 
         .pivot-nav {
@@ -873,7 +888,9 @@
                     <span class="metro-brand-square"></span>
                     BG Engenharia // Branding
                 </a>
-                <span class="metro-status">Guia de Sala</span>
+                <a href="assets/brand-audit-slides.pdf" target="_blank" rel="noopener noreferrer" class="header-slides-btn">
+                    Ver Slides ↗
+                </a>
             </div>
             <div class="pivot-nav" id="pivotNav">
                 <a href="#visao-interna" class="pivot-link">01 Visão Interna</a>
@@ -882,6 +899,7 @@
                 <a href="#analise" class="pivot-link">04 Análise</a>
                 <a href="#diagnostico" class="pivot-link">05 Diagnóstico</a>
                 <a href="#proposta" class="pivot-link">06 Proposta</a>
+                <a href="portfolio.html" class="pivot-link">Portfólio</a>
             </div>
         </div>
     </nav>
